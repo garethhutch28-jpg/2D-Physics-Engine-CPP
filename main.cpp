@@ -1,90 +1,85 @@
 #include <cmath> 
 #include <iostream> 
-    struct Vector2
-    {
-        float x;
-        float y;
-    };
+#include "raylib.h"
+#include "VectorMath.h"
 
-    Vector2 addVector(Vector2 a, Vector2 b)
-    {
-        Vector2 result;
-        result.x = a.x + b.x;
-        result.y = a.y + b.y;
-        return result;
+//gravity
+float gravityAcceleration = 9.81;
+Vector2D gravity {0,9.81};
 
+//struct for cirles
+struct Circles
+{
+    Vector2D position;
+    float mass;
+    Vector2D velocity;
+    float radius;
+
+};
+
+//convert my vector struct into a raylib vector
+Vector2 convertVectors(Vector2D a)
+{
+    Vector2 raylibVector;
+    raylibVector.x = a.x;
+    raylibVector.y = a.y;
+    return raylibVector;
+}
+
+Vector2D applyGravity(Vector2D velocity, Vector2D gravity, float dt)
+{
+    velocity = addVector(velocity, scalarMultiply(gravity, dt));
+    return velocity;
+}
+
+Vector2D updateVelocity(Vector2D velocity, Vector2D gravity, float dt)
+    {
+        return applyGravity(velocity, gravity, dt);
     }
-
-    Vector2 subtractVector(Vector2 a, Vector2 b)
+Vector2D updatePosition(Vector2D position, Vector2D velocity, float dt)
     {
-        Vector2 result;
-        result.x = a.x - b.x;
-        result.y = a.y - b.y;
-        return result;
-
-    }
-
-    float magnitude(Vector2 a)
-    {
-        float result;
-        result = sqrt(a.x * a.x + a.y * a.y);
-        return result;
-    }
-
-    Vector2 scalarMultiply(Vector2 a, float b)
-    {
-        Vector2 product;
-        product.x = a.x * b;
-        product.y = a.y * b;
-        return product;
-    }
-        
-    Vector2 scalarDivide(Vector2 a, float b)
-    {
-        Vector2 product;
-        product.x = a.x / b;
-        product.y = a.y / b;
-        return product;
-    }
-    
-    float dotProduct(Vector2 a, Vector2 b)
-    {
-        float product;
-        product = (a.x * b.x + a.y * b.y);
-        return product;
-    }
-
-    Vector2 normalise(Vector2 a)
-    {
-        Vector2 result;
-        result = scalarDivide(a, magnitude(a));
-        return result;
+        position = addVector(position, scalarMultiply(velocity, dt));
+        return position;
     }
 
 int main()
 {
-    //get two vectors and split them into their x and y
-    float ax, ay;
-    float bx, by;
+    InitWindow(1000, 600, "PhysicsEngine2D");
+    SetTargetFPS(60);
 
-    std::cout << "Enter Vector1 x: ";
-    std::cin >> ax;
-    std::cout << "Enter Vector1 y: ";
-    std::cin >> ay;
-    std::cout << "Enter Vector2 x: ";
-    std::cin >> bx;
-    std::cout << "Enter Vector2 y: ";
-    std::cin >> by;
+    //make the first cirlce
+        Circles obj1;
+        obj1.position = {50, 50};
+        obj1.velocity = {0,0};
+        obj1.mass = 75;
+        obj1.radius = 25;
 
-    //make vectors out of the inputs
-    Vector2 a = {ax, ay};
-    Vector2 b = {bx, by};
+    while (!WindowShouldClose())
+    {
+        
+        //get delta timne
+        float dt = GetFrameTime();
+        
+        //apply gravity
+        obj1.velocity = updateVelocity(obj1.velocity, gravity, dt);
+        obj1.position = updatePosition(obj1.position, obj1.velocity, dt);
+        
+        //convert vector2D to vector2
+        convertVectors(obj1.velocity);
+        convertVectors(obj1.position);
 
-    //test the adding
-    Vector2 vectorSum = addVector(a, b);
-    
-    float sumMagnitude = magnitude(vectorSum);
+        BeginDrawing();
+        //draw the first circle
+        DrawCircleV(convertVectors(obj1.position), obj1.radius , RED);
+        
+        //gravity physics on the ball so it falls
+        //f = mak
+        //obj1.velocity.y ; 
 
-    std::cout << "The x component of the addition is " << vectorSum.x << " and the y result is " << vectorSum.y << " the magnitude of the addition is: " << sumMagnitude;
+        ClearBackground(WHITE);
+        EndDrawing();
+    }
 
+    CloseWindow();
+    return 0;
 }
