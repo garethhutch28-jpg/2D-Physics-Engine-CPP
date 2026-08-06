@@ -14,7 +14,7 @@ struct Circles
     float mass;
     Vector2D velocity;
     float radius;
-
+    float resitution;
 };
 
 //convert my vector struct into a raylib vector
@@ -53,13 +53,14 @@ int main()
         obj1.velocity = {0,0};
         obj1.mass = 75;
         obj1.radius = 25;
+        obj1.resitution = 0.2;
 
     while (!WindowShouldClose())
     {
         
         //get delta timne
         float dt = GetFrameTime();
-        
+    
         //apply gravity
         obj1.velocity = updateVelocity(obj1.velocity, gravity, dt);
         obj1.position = updatePosition(obj1.position, obj1.velocity, dt);
@@ -67,6 +68,13 @@ int main()
         //convert vector2D to vector2
         convertVectors(obj1.velocity);
         convertVectors(obj1.position);
+
+        //ground collision
+        if (obj1.position.y > 575)
+        {
+            obj1.position.y = 575;
+            obj1.velocity.y = -obj1.resitution * obj1.velocity.y;
+        }
 
         BeginDrawing();
         //draw the first circle
