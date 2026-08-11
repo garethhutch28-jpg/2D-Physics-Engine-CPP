@@ -2,6 +2,7 @@
 #include <iostream> 
 #include "raylib.h"
 #include "VectorMath.h"
+#include <vector>
 
 //gravity
 float gravityAcceleration = 9.81;
@@ -47,43 +48,80 @@ int main()
     InitWindow(1000, 600, "PhysicsEngine2D");
     SetTargetFPS(60);
 
-    //make the first cirlce
-        Circles obj1;
-        obj1.position = {50, 50};
-        obj1.velocity = {0,0};
-        obj1.mass = 75;
-        obj1.radius = 25;
-        obj1.resitution = 0.2;
+    //make vector for circles
+    std::vector<Circles> circles;
+    
 
     while (!WindowShouldClose())
     {
         
+
         //get delta timne
         float dt = GetFrameTime();
     
-        //apply gravity
-        obj1.velocity = updateVelocity(obj1.velocity, gravity, dt);
-        obj1.position = updatePosition(obj1.position, obj1.velocity, dt);
-        
-        //convert vector2D to vector2
-        convertVectors(obj1.velocity);
-        convertVectors(obj1.position);
-
-        //ground collision
-        if (obj1.position.y > 575)
+        //bouncy ball spawner (right arrow)
+        if (IsKeyPressed(KEY_RIGHT))
         {
-            obj1.position.y = 575;
-            obj1.velocity.y = -obj1.resitution * obj1.velocity.y;
+            Circles bouncyBall;
+            bouncyBall.position = {50, 50};
+            bouncyBall.velocity = {0,1};
+            bouncyBall.mass = 0.12;
+            bouncyBall.radius = 10;
+            bouncyBall.resitution = 0.9;
+            circles.push_back(bouncyBall);
         }
 
-        BeginDrawing();
-        //draw the first circle
-        DrawCircleV(convertVectors(obj1.position), obj1.radius , RED);
-        
-        //gravity physics on the ball so it falls
-        //f = mak
-        //obj1.velocity.y ; 
+        //tennis ball spawner (left arrow)
+        if (IsKeyPressed(KEY_LEFT))
+        {
+            Circles tennisBall;
+            tennisBall.position = {100, 50};
+            tennisBall.velocity = {0, 1};
+            tennisBall.mass = 0.56;
+            tennisBall.radius = 15;
+            tennisBall.resitution = 0.7;
+            circles.push_back(tennisBall);
+        }
 
+        //bowling ball spawner
+        if (IsKeyPressed(KEY_UP))
+        {
+            Circles bowlingBall;
+            bowlingBall.position = {150, 50};
+            bowlingBall.velocity = {0, 1};
+            bowlingBall.mass = 6;
+            bowlingBall.radius = 25;
+            bowlingBall.resitution = 0.2;
+            circles.push_back(bowlingBall);
+
+        }
+
+
+            
+        ///all balls physics updates
+        for (Circles&c : circles)
+        {
+            c.velocity = updateVelocity(c.velocity, gravity, dt);
+            c.position = updatePosition(c.position, c.velocity, dt);
+
+            //convert vector2D to vector2
+            convertVectors(c.velocity);
+            convertVectors(c.position);
+
+            //ground collision
+            if (c.position.y > 575)
+            {
+                c.position.y = 575;
+                c.velocity.y = -c.resitution * c.velocity.y;
+            }
+        }
+        
+        BeginDrawing();
+        //draw all circles
+        for (Circles&c:circles)
+        {
+            DrawCircleV(convertVectors(c.position), c.radius , RED);
+        }
         ClearBackground(WHITE);
         EndDrawing();
     }
