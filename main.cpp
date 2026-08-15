@@ -26,13 +26,14 @@ Vector2 convertVectors(Vector2D a)
     raylibVector.y = a.y;
     return raylibVector;
 }
-
+//gravity function
 Vector2D applyGravity(Vector2D velocity, Vector2D gravity, float dt)
 {
     velocity = addVector(velocity, scalarMultiply(gravity, dt));
     return velocity;
 }
 
+//update objects velocity and position due to gravity
 Vector2D updateVelocity(Vector2D velocity, Vector2D gravity, float dt)
     {
         return applyGravity(velocity, gravity, dt);
@@ -42,6 +43,9 @@ Vector2D updatePosition(Vector2D position, Vector2D velocity, float dt)
         position = addVector(position, scalarMultiply(velocity, dt));
         return position;
     }
+
+
+
 
 int main()
 {
@@ -55,6 +59,21 @@ int main()
     while (!WindowShouldClose())
     {
         
+        //cirlce mid point comparison and collision check
+        for (int i =0; i < circles.size(); i++)
+        {
+            for (int j = i+1; j < circles.size(); j++)
+            {
+                //compare the midpoints of i and j to determine if they are overlapping
+                Vector2D distance = subtractVector(circles[i].position,circles[j].position);
+                float centreDistance = magnitude(distance);
+                //collision check
+                if (centreDistance < (circles[i].radius + circles[j].radius))
+                {
+                    std::cout << "Collision detected between circle " << i << " and " << j << std::endl;
+                }
+            }
+        }
 
         //get delta timne
         float dt = GetFrameTime();
@@ -114,9 +133,12 @@ int main()
                 c.position.y = 575;
                 c.velocity.y = -c.resitution * c.velocity.y;
             }
+
+            
         }
         
         BeginDrawing();
+
         //draw all circles
         for (Circles&c:circles)
         {
