@@ -43,7 +43,40 @@ Vector2D updatePosition(Vector2D position, Vector2D velocity, float dt)
         position = addVector(position, scalarMultiply(velocity, dt));
         return position;
     }
+void CollisionResolution(Circles& A, Circles&B)
+{
+    Vector2D normal = normalise(subtractVector(B.position, A.position));
+    Vector2D relativeVelo = subtractVector(B.velocity, A.velocity);
+    float veloNormal = dotProduct(relativeVelo, normal);
+    if (veloNormal > 0)
+    {
+        std::cout << "no impulse needed";
+        return;
+    }
 
+    float e;
+
+    if (A.resitution > B.resitution)
+    {
+        e = B.resitution;
+    }
+    if (A.resitution < B.resitution)
+    {
+        e = A.resitution;
+    }
+    if (A.resitution = B.resitution)
+    {
+        e = A.resitution;
+    }
+
+    float impulseMagnitude = -(1 + e) * veloNormal / (1/A.mass + 1/B.mass);
+    Vector2D impulse = scalarMultiply (normal, impulseMagnitude);
+    //apply the impulse
+    A.velocity = subtractVector(A.velocity, scalarMultiply(impulse, 1/A.mass));
+    B.velocity = addVector(B.velocity, scalarMultiply(impulse, 1/B.mass));
+
+
+}
 
 
 
@@ -70,7 +103,7 @@ int main()
                 //collision check
                 if (centreDistance < (circles[i].radius + circles[j].radius))
                 {
-                    std::cout << "Collision detected between circle " << i << " and " << j << std::endl;
+                    CollisionResolution(circles[i], circles[j]);
                 }
             }
         }
