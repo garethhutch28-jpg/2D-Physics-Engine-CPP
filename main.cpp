@@ -26,6 +26,14 @@ Vector2 convertVectors(Vector2D a)
     raylibVector.y = a.y;
     return raylibVector;
 }
+//vector 2 to vector 2D
+Vector2D convertVector2(Vector2 a)
+{
+    Vector2D raylibVector;
+    raylibVector.x = a.x;
+    raylibVector.y = a.y;
+    return raylibVector;
+}
 //gravity function
 Vector2D applyGravity(Vector2D velocity, Vector2D gravity, float dt)
 {
@@ -43,6 +51,14 @@ Vector2D updatePosition(Vector2D position, Vector2D velocity, float dt)
         position = addVector(position, scalarMultiply(velocity, dt));
         return position;
     }
+//find mouse position as a vector2D
+Vector2D mousePosition()
+{
+    Vector2 mousePos = GetMousePosition();
+    Vector2D cursorPosition = convertVector2(mousePos);
+    return cursorPosition;
+}
+
 void CollisionResolution(Circles& A, Circles&B)
 {
     Vector2D normal = normalise(subtractVector(B.position, A.position));
@@ -74,7 +90,6 @@ void CollisionResolution(Circles& A, Circles&B)
     //apply the impulse
     A.velocity = subtractVector(A.velocity, scalarMultiply(impulse, 1/A.mass));
     B.velocity = addVector(B.velocity, scalarMultiply(impulse, 1/B.mass));
-
 
 }
 
@@ -115,7 +130,7 @@ int main()
         if (IsKeyPressed(KEY_RIGHT))
         {
             Circles bouncyBall;
-            bouncyBall.position = {50, 50};
+            bouncyBall.position = mousePosition();
             bouncyBall.velocity = {0,1};
             bouncyBall.mass = 0.12;
             bouncyBall.radius = 10;
@@ -127,7 +142,7 @@ int main()
         if (IsKeyPressed(KEY_LEFT))
         {
             Circles tennisBall;
-            tennisBall.position = {100, 50};
+            tennisBall.position = mousePosition();
             tennisBall.velocity = {0, 1};
             tennisBall.mass = 0.56;
             tennisBall.radius = 15;
@@ -139,7 +154,7 @@ int main()
         if (IsKeyPressed(KEY_UP))
         {
             Circles bowlingBall;
-            bowlingBall.position = {150, 50};
+            bowlingBall.position = mousePosition();
             bowlingBall.velocity = {0, 1};
             bowlingBall.mass = 6;
             bowlingBall.radius = 25;
